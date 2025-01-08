@@ -8,7 +8,6 @@ library(lubridate)
 library(sf)
 library(hms)
 
-
 df <- readRDS("path/to/your/rds.rds")
 
 #등산객들의 등산 바운더리 확인
