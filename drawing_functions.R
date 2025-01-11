@@ -35,7 +35,8 @@ map <- openmap(c(northest, westest), c(southest, eastest),
                mergeTiles = TRUE)
 map_p <- openproj(map)
 
-drawing <- function(num1, num2, indivList) {
+# 두 trajectory의 유사도 시각화 함수 -------------------------------------------------------------------------
+similarity_visualize <- function(num1, num2, indivList) {
   # Spatial ----------------------------------------------------------------
   spatial <- OpenStreetMap::autoplot.OpenStreetMap(map_p) +
     geom_point(data = data.frame(indivList[[num1]]),
@@ -87,4 +88,34 @@ drawing <- function(num1, num2, indivList) {
                     time = time)
   
   return(plot_list)
+}
+
+# 월악산 지도 그리는 함수 -------------------------------------------------------------------------
+# 위에서 확인한 map_p를 통해,
+# 월악산 지도를 그리는 함수.
+# 투명도를 input으로 받아, 지도의 투명도를 결정정
+draw_map <- function(alpha){
+  p <- OpenStreetMap::autoplot.OpenStreetMap(map_p) +
+    labs(x = "longitude", y = "latitude") +
+    annotate(
+      "rect",
+      xmin = westest, xmax = eastest,   # 지도 범위에 맞춰 좌표 설정
+      ymin = southest, ymax = northest,
+      fill = "white", alpha = alpha    # 반투명 하얀색
+    )
+  
+  return(p)
+}
+
+# 등산객의 등산 경로를 그려주는 함수 -------------------------------------------------------------------------
+# indivList의 num번째 사람의 등산 경로를,
+# alpha의 투명도를 가지는 color로 그림.
+draw_route <- function(num, indivList, color, alpha){
+  p <- geom_point(data = data.frame(indivList[[num]]),
+                  aes(x = longitude, y = latitude), 
+                  col = color, 
+                  size = 1, 
+                  alpha = alpha)
+  
+  return(p)
 }
