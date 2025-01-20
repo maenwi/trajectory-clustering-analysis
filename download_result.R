@@ -19,10 +19,8 @@ spatial_sim <- subset(spatial_sim, select = -X)
 time_sim <- subset(time_sim, select = -X)
 velocity_sim <- subset(velocity_sim, select = -X)
 
-# -------------------------------------------------------------------------
+# 클러스터링 결과 불러오는 함수 -------------------------------------------------------------------------
 
-
-# 클러스터링 결과 불러오는 함수
 get_clustering_result <- function(clustering_method = c("hclust","kmeans"), combine_similarity_fun, number_of_clusters, distance_type){
   rds_name <- paste(clustering_method, combine_similarity_fun, number_of_clusters, distance_type, "results.rds", sep = "_")
   file_path <- paste(cluster_results_folder_path,rds_name, sep = "")
