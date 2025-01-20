@@ -119,3 +119,41 @@ draw_route <- function(num, indivList, color, alpha){
   
   return(p)
 }
+
+# 한 trajectory의 값들 시각화 -------------------------------------------------------------------------
+# 한 trajectory의 long, lat, elev, spd 등을 시각화 하는 함수 입니다.
+# x축과 y축으로 쓰일 값을 입력 받아, scatter plot을 그려줍니다.
+
+draw_trajectory_eda <- function(indiv_df, col1, col2, fig_name){
+  indiv_df <- data.frame(indiv_df)
+  indiv_df <- data.frame(x = indiv_df[[col1]], y = indiv_df[[col2]])
+  
+  p <- ggplot(data = indiv_df, aes(x = x, y = y)) + 
+    geom_point() +
+    theme_minimal() +
+    labs(x = col1, y = col2, title = fig_name) +
+    theme(plot.title = element_text(hjust = 0.5, size = 20),
+          axis.title.x = element_text(size = 15),   # x축 제목 폰트 크기
+          axis.title.y = element_text(size = 15),   # y축 제목 폰트 크기
+          axis.text.x = element_text(size = 12),    # x축 눈금 폰트 크기
+          axis.text.y = element_text(size = 12)     # y축 눈금 폰트 크기
+    ) 
+  
+  return(p)
+}
+
+indivNum <- 12 # 그림 그릴 개인의 번호
+spd3D <- draw_trajectory_eda(df[[indivNum]], "time", "spd3D", "(f) spd3D")
+spd2D <- draw_trajectory_eda(df[[indivNum]], "time", "spd2D", "(e) spd2D")
+latitude <- draw_trajectory_eda(df[[indivNum]], "time", "latitude", "(b) Latitude")
+longitude <- draw_trajectory_eda(df[[indivNum]], "time", "longitude", "(a) Longitude")
+elev <- draw_trajectory_eda(df[[indivNum]], "time", "elev", "(c) Elevation")
+longlat <- draw_trajectory_eda(df[[indivNum]], "longitude", "latitude", "(d) Long. vs Lat.")
+
+png("figure_file_name.png", width = 1200, height = 800)
+grid.arrange(
+  longitude, latitude, elev,
+  longlat, spd2D, spd3D,
+  nrow = 2, ncol = 3 # 2행, 3열로 배치
+)
+dev.off()
