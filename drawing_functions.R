@@ -10,30 +10,42 @@ library(hms)
 
 df <- readRDS("path/to/your/rds.rds")
 
-#등산객들의 등산 바운더리 확인
-eastest <- 0
-westest <- 10000
-northest <- 0
-southest <- 90
-for (i in seq(1,length(df))){
-  east <- max(df[[i]]$longitude)
-  west <- min(df[[i]]$longitude)
-  north <- max(df[[i]]$latitude)
-  south <- min(df[[i]]$latitude)
+# 등산객들의 등산 바운더리 확인 ---------------------------------------------------------
+find_map_boundary <- function(indivList){
+  #등산객들의 등산 바운더리 확인
+  eastest <- 0
+  westest <- 10000
+  northest <- 0
+  southest <- 90
+  for (i in seq(1,length(indivList))){
+    east <- max(indivList[[i]]$longitude)
+    west <- min(indivList[[i]]$longitude)
+    north <- max(indivList[[i]]$latitude)
+    south <- min(indivList[[i]]$latitude)
+    
+    if (east > eastest) {eastest <- east}
+    if (west < westest) {westest <- west}
+    if (north > northest) {northest <- north}
+    if (south < southest) {southest <- south}
+  }
   
-  if (east > eastest) {eastest <- east}
-  if (west < westest) {westest <- west}
-  if (north > northest) {northest <- north}
-  if (south < southest) {southest <- south}
+  return(c(westest, southest, eastest, northest))
 }
 
+# 위에서 확인한 등산 바운더리로 해당 부분 지도 가져오는 함수 ---------------------------------------------------------
+find_map <- function(boundary_vector){
+  #월악산 지도 확인
+  map <- openmap(c(boundary_vector[4], boundary_vector[1]), 
+                 c(boundary_vector[2], boundary_vector[3]), 
+                 zoom = 10, 
+                 type = "osm", 
+                 mergeTiles = TRUE)
+  map_p <- openproj(map)
+  
+  return(map_p)
+}
 
-#월악산 지도 확인
-map <- openmap(c(northest, westest), c(southest, eastest), 
-               zoom = 10, 
-               type = "osm", 
-               mergeTiles = TRUE)
-map_p <- openproj(map)
+map_p <- find_map(find_map_boundary(df))
 
 # 두 trajectory의 유사도 시각화 함수 -------------------------------------------------------------------------
 # 유사도 시각화 -----------------------------------------------------------------
