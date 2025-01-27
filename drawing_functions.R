@@ -36,18 +36,33 @@ map <- openmap(c(northest, westest), c(southest, eastest),
 map_p <- openproj(map)
 
 # 두 trajectory의 유사도 시각화 함수 -------------------------------------------------------------------------
+# 유사도 시각화 -----------------------------------------------------------------
 similarity_visualize <- function(num1, num2, indivList) {
   # Spatial ----------------------------------------------------------------
   spatial <- OpenStreetMap::autoplot.OpenStreetMap(map_p) +
     geom_point(data = data.frame(indivList[[num1]]),
-               aes(x = longitude, y = latitude), col = "red") +
+               aes(x = longitude, y = latitude), col = "red", alpha = 0.5) +
     geom_point(data = data.frame(indivList[[num2]]),
-               aes(x = longitude, y = latitude), col = "blue") +
-    labs(title = paste("Spatial Similarity of",num1,"vs",num2, sep =" "), 
+               aes(x = longitude, y = latitude), col = "blue", alpha = 0.5) +
+    labs(title = paste("(a) Spatial Similarity of",num1,"vs",num2, sep =" "), 
          x = "longitude",
-         y = "latitude")
+         y = "latitude") +
+    theme(plot.title = element_text(hjust = 0.5))
+  
   
 
+  # Spatial Detailed ---------------------------------------------------------
+  detailed_spatial <- ggplot() +
+    geom_point(data = data.frame(indivList[[num1]]),
+               aes(x = longitude, y = latitude), col = "red", alpha = 0.5) +
+    geom_point(data = data.frame(indivList[[num2]]),
+               aes(x = longitude, y = latitude), col = "blue", alpha = 0.5) +
+    theme_minimal() + 
+    labs(title = paste("(b) Spatial Similarity of",num1,"vs",num2, sep =" "), 
+         x = "longitude",
+         y = "latitude") +
+    theme(plot.title = element_text(hjust = 0.5))
+  
   # Velocity ----------------------------------------------------------------
   df1 <- data.frame(value = indivList[[num1]]$spd3D[-1], group = as.character(num1))
   df2 <- data.frame(value = indivList[[num2]]$spd3D[-1], group = as.character(num2))
@@ -56,10 +71,11 @@ similarity_visualize <- function(num1, num2, indivList) {
   velocity <- ggplot(df, aes(x = value, y = ..density.., fill = group)) +
     geom_histogram(position = "identity", alpha = 0.5, binwidth = 1) +
     scale_fill_manual(values = c("red", "blue")) +
-    labs(title = paste("Velocity Overlapping of",num1,"vs",num2, sep =" "),
+    labs(title = paste("(c) Velocity Overlapping of",num1,"vs",num2, sep =" "),
          x = "spd3D",
          y = "Frequency") +
-    theme_minimal()
+    theme_minimal() + 
+    theme(plot.title = element_text(hjust = 0.5))
   
   # Time ----------------------------------------------------------------
   time1 <- format(indivList[[num1]]$time, '%H:%M:%S')
@@ -74,21 +90,25 @@ similarity_visualize <- function(num1, num2, indivList) {
   time <- ggplot(df, aes(x = time, y = y, color = group)) +
     geom_line(linewidth = 1.2) +
     scale_color_manual(values = c("red", "blue")) +
-    labs(title = paste("Time Overlapping of",num1,"vs",num2, sep =" "),
+    labs(title = paste("(d) Time Overlapping of",num1,"vs",num2, sep =" "),
          x = "Time",
          y = "Group") +
     theme_minimal() +
     coord_cartesian(ylim = c(-10,10)) + 
-    theme(axis.text.y = element_text(size = 12)) #y축 글자크기 조정
+    scale_y_continuous(labels = NULL) + 
+    theme(axis.text.y = element_text(size = 12),  #y축 글자크기 조정
+          plot.title = element_text(hjust = 0.5)) 
   
   # p <- grid.arrange(spatial, velocity, time, nrow = 1, ncol = 3)
   # return(p)
   plot_list <- list(spatial = spatial,
+                    detailed_spatial = detailed_spatial,
                     velocity = velocity,
                     time = time)
   
   return(plot_list)
 }
+
 
 # 월악산 지도 그리는 함수 -------------------------------------------------------------------------
 # 위에서 확인한 map_p를 통해,
