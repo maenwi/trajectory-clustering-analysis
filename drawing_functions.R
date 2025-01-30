@@ -56,10 +56,10 @@ similarity_visualize <- function(num1, num2, indivList) {
                aes(x = longitude, y = latitude), col = "red", alpha = 0.5) +
     geom_point(data = data.frame(indivList[[num2]]),
                aes(x = longitude, y = latitude), col = "blue", alpha = 0.5) +
-    labs(title = paste("(a) Spatial Similarity of",num1,"vs",num2, sep =" "), 
+    labs(caption = paste("(a) Spatial Similarity of",num1,"vs",num2, sep =" "), 
          x = "longitude",
          y = "latitude") +
-    theme(plot.title = element_text(hjust = 0.5))
+    theme(plot.caption = element_text(hjust = 0.5, size = 20))
   
   
 
@@ -70,10 +70,10 @@ similarity_visualize <- function(num1, num2, indivList) {
     geom_point(data = data.frame(indivList[[num2]]),
                aes(x = longitude, y = latitude), col = "blue", alpha = 0.5) +
     theme_minimal() + 
-    labs(title = paste("(b) Spatial Similarity of",num1,"vs",num2, sep =" "), 
+    labs(caption = paste("(b) Spatial Similarity of",num1,"vs",num2, sep =" "), 
          x = "longitude",
          y = "latitude") +
-    theme(plot.title = element_text(hjust = 0.5))
+    theme(plot.caption = element_text(hjust = 0.5, size = 20))
   
   # Velocity ----------------------------------------------------------------
   df1 <- data.frame(value = indivList[[num1]]$spd3D[-1], group = as.character(num1))
@@ -83,11 +83,11 @@ similarity_visualize <- function(num1, num2, indivList) {
   velocity <- ggplot(df, aes(x = value, y = ..density.., fill = group)) +
     geom_histogram(position = "identity", alpha = 0.5, binwidth = 1) +
     scale_fill_manual(values = c("red", "blue")) +
-    labs(title = paste("(c) Velocity Overlapping of",num1,"vs",num2, sep =" "),
+    labs(caption = paste("(c) Velocity Overlapping of",num1,"vs",num2, sep =" "),
          x = "spd3D",
          y = "Frequency") +
     theme_minimal() + 
-    theme(plot.title = element_text(hjust = 0.5))
+    theme(plot.caption = element_text(hjust = 0.5, size = 20))
   
   # Time ----------------------------------------------------------------
   time1 <- format(indivList[[num1]]$time, '%H:%M:%S')
@@ -102,14 +102,14 @@ similarity_visualize <- function(num1, num2, indivList) {
   time <- ggplot(df, aes(x = time, y = y, color = group)) +
     geom_line(linewidth = 1.2) +
     scale_color_manual(values = c("red", "blue")) +
-    labs(title = paste("(d) Time Overlapping of",num1,"vs",num2, sep =" "),
+    labs(caption = paste("(d) Time Overlapping of",num1,"vs",num2, sep =" "),
          x = "Time",
          y = "Group") +
     theme_minimal() +
     coord_cartesian(ylim = c(-10,10)) + 
     scale_y_continuous(labels = NULL) + 
     theme(axis.text.y = element_text(size = 12),  #y축 글자크기 조정
-          plot.title = element_text(hjust = 0.5)) 
+          plot.caption = element_text(hjust = 0.5, size = 20)) 
   
   # p <- grid.arrange(spatial, velocity, time, nrow = 1, ncol = 3)
   # return(p)
