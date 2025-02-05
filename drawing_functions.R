@@ -61,8 +61,6 @@ similarity_visualize <- function(num1, num2, indivList) {
          y = "latitude") +
     theme(plot.caption = element_text(hjust = 0.5, size = 20))
   
-  
-
   # Spatial Detailed ---------------------------------------------------------
   detailed_spatial <- ggplot() +
     geom_point(data = data.frame(indivList[[num1]]),
@@ -80,15 +78,27 @@ similarity_visualize <- function(num1, num2, indivList) {
   df2 <- data.frame(value = indivList[[num2]]$spd3D[-1], group = as.character(num2))
   df <- rbind(df1, df2)
   
+  # velocity <- ggplot(df, aes(x = value, y = ..density.., fill = group)) +
+  #   geom_histogram(position = "identity", alpha = 0.5, binwidth = 1) +
+  #   scale_fill_manual(values = c("red", "blue")) +
+  #   labs(caption = paste("(c) Velocity Overlapping of",num1,"vs",num2, sep =" "),
+  #        x = "spd3D",
+  #        y = "Frequency") +
+  #   theme_minimal() +
+  #   theme(plot.caption = element_text(hjust = 0.5, size = 20))
+
   velocity <- ggplot(df, aes(x = value, y = ..density.., fill = group)) +
-    geom_histogram(position = "identity", alpha = 0.5, binwidth = 1) +
+    # geom_histogram(position = "identity", alpha = 0.5, binwidth = 1) +
+    geom_density(alpha = 0.5) + 
     scale_fill_manual(values = c("red", "blue")) +
+    scale_x_continuous(limits = c(0, 10)) +
     labs(caption = paste("(c) Velocity Overlapping of",num1,"vs",num2, sep =" "),
          x = "spd3D",
          y = "Frequency") +
-    theme_minimal() + 
+    theme_minimal() +
     theme(plot.caption = element_text(hjust = 0.5, size = 20))
-  
+
+  # 
   # Time ----------------------------------------------------------------
   time1 <- format(indivList[[num1]]$time, '%H:%M:%S')
   time1 <- as_hms(time1)
