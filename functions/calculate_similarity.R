@@ -1,3 +1,52 @@
+# Similarity --------------------------------------------------------------
+
+## 5. Spatial --------------------------------------------------------------
+library(geodist)
+similarity_spatial <- function(obj1, obj2, epsilon=0.1){
+  #obj1 and obj2 contain spatial trajectories
+  #epsilon: tuning parameter, 한 point를 기준으로 반지름이 epsilon인 ball을
+  #생각하고 그 안에 다른 obj의 point가 들어있는지 없는지를 체크한다.
+  
+  #calculate lengths
+  n1 <- length(obj1$long)
+  n2 <- length(obj2$long)
+  
+  LongLat_matrix_obj1 <- data.frame(lon=obj1$long, lat=obj1$lat)
+  LongLat_matrix_obj2 <- data.frame(lon=obj2$long, lat=obj2$lat)
+  
+  #학생들이 만들어 놓은 chordal_dist 함수 이용
+  chordal_dist_vec=function(x,y){
+    #01. Calculate geodesic distance first
+    geodesic_matrix <- geodist(x,y, measure = "geodesic")/1000 #거리 km단위로 변환
+    
+    #02. Convert geodesic distance into chordal distance(Lecture01 p16, p17)
+    radius <- 6371 #지구 반지름의 평균값(단위: km)
+    theta <- geodesic_matrix/radius
+    chordal_matrix <- 2 * radius * sin(theta/2)
+    
+    return(chordal_matrix) #diagonal에서 딱 하나 넘어간게 두 시점간의 거리(단위 km)
+  }
+  #(1) obj1에 대해 계산
+  #result_obj1: n2*n1 matrix
+  result_obj1 <- apply(LongLat_matrix_obj1, 1, function(x) chordal_dist_vec(x, LongLat_matrix_obj2))
+  is_neighbor_obj1 <- apply(result_obj1, 2, function(x) sum(x<epsilon))
+  result_vec1 <- is_neighbor_obj1>0
+  result1 <- sum(result_vec1)/length(result_vec1)
+  
+  #(2) obj2에 대해 계산
+  #n1 < n2인 경우, obj2의 모든 gps observation 중 obj1에 가까이 있는 점의 갯수를 센다
+  result_obj2 <- apply(LongLat_matrix_obj2, 1, function(x) chordal_dist_vec(x, LongLat_matrix_obj1))
+  is_neighbor_obj2 <- apply(result_obj2, 2, function(x) sum(x<epsilon))
+  result_vec2 <- is_neighbor_obj2>0
+  result2 <- sum(result_vec2)/length(result_vec2)
+  
+  similarity_list=list(obj1=result_vec1, obj2=result_vec2)
+  
+  #두 개의 result중 작은 값을 similarity measure로 삼는다)
+  return(list(similarity=min(result1, result2), similarity_list=similarity_list, similarity_obj1=result1, similarity_obj2=result2))
+}
+
+
 ## 6. Velocity -------------------------------------------------------------
 library(overlapping)
 similarity_velocity <- function(obj1, obj2, plot = FALSE){
