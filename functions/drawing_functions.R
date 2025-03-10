@@ -173,8 +173,8 @@ draw_trajectory_eda <- function(indiv_df, col1, col2, fig_name){
   p <- ggplot(data = indiv_df, aes(x = x, y = y)) + 
     geom_point() +
     theme_minimal() +
-    labs(x = col1, y = col2, title = fig_name) +
-    theme(plot.title = element_text(hjust = 0.5, size = 20),
+    labs(x = col1, y = col2, caption = fig_name) +
+    theme(plot.cpation = element_text(hjust = 0.5, size = 20),
           axis.title.x = element_text(size = 15),   # x축 제목 폰트 크기
           axis.title.y = element_text(size = 15),   # y축 제목 폰트 크기
           axis.text.x = element_text(size = 12),    # x축 눈금 폰트 크기
